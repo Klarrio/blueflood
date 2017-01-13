@@ -17,12 +17,18 @@ export ELASTICSEARCH_HOST="$ELASTICSEARCH_PORT_9300_TCP_ADDR"
 fi
 
 ######## Connecting to Cassandra and loading Blueflood's schema #######
+CASSANDRA_CONNECTION_PORT=9160
+if [ $CASSANDRA_DRIVER == "datastax" ]
+then
+CASSANDRA_CONNECTION_PORT=9042
+fi
+
 CASSCOUNTER=0
 trap "exit" INT
 while [[ $CASSCOUNTER -lt 180 ]];  #Wait for 180 seconds for cassandra to get ready.
 do
         let CASSCOUNTER=CASSCOUNTER+2
-	nc -z $CASSANDRA_HOST 9160 > /dev/null
+	nc -z $CASSANDRA_HOST $CASSANDRA_CONNECTION_PORT > /dev/null
 	if [ $? == 0 ]
 		then
                 echo "Connected to Cassandra at $CASSANDRA_HOST"
@@ -40,7 +46,7 @@ done
 export CASSANDRA_HOSTS="$CASSANDRA_HOST:9160"
 export CASSANDRA_BINXPORT_HOSTS="$CASSANDRA_HOST:9042"
 
-cqlsh $CASSANDRA_HOST -f blueflood.cdl
+cqlsh  --cqlversion="3.4.0" $CASSANDRA_HOST -f blueflood.cdl
 
 ######## Connecting to Elasticsearch #######
 ESCOUNTER=0

@@ -7,7 +7,7 @@ RUN apt-get install -y netcat
 RUN apt-get install -y git
 RUN apt-get install -y python python-dev python-pip python-virtualenv && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install cqlsh==4.1.1
+RUN pip install cqlsh==5.0.3
 
 COPY ES-Setup /ES-Setup
 COPY load.cdl /blueflood.cdl
